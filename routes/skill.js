@@ -1,6 +1,6 @@
 
 const { Router } = require("express");
-const Skill = require("../models/skills");
+const Skill = require("../models/Skills");
 const upload = require("../middleware/multerConfig");
 const path = require("path");
 const fs = require("fs").promises;
