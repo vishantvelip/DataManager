@@ -1,4 +1,3 @@
-
 const { Router } = require("express");
 const Skill = require("../models/Skills");
 const upload = require("../middleware/multerConfig");
@@ -51,14 +50,20 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
     let projectImg = skill.projectImg;
     if (req.file) {
       if (projectImg) {
-        try { await fs.unlink(path.join(__dirname, "../public", projectImg)); } catch {}
+        try {
+          await fs.unlink(path.join(__dirname, "../public", projectImg));
+        } catch (err) {
+          if (err.code !== 'ENOENT') {
+            console.error("Error deleting file:", err);
+          }
+        }
       }
       projectImg = `uploads/${req.file.filename}`;
     }
     await Skill.findByIdAndUpdate(req.params.id, {
       skillName: req.body.skillName,
       description: req.body.description,
-      projectImg
+      projectImg,
     });
     res.redirect("/api/skills/view");
   } catch (error) {
@@ -69,7 +74,13 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
 router.post("/delete/:id", async (req, res) => {
   const skill = await Skill.findById(req.params.id);
   if (skill.projectImg) {
-    try { await fs.unlink(path.join(__dirname, "../public", skill.projectImg)); } catch {}
+    try {
+      await fs.unlink(path.join(__dirname, "../public", skill.projectImg));
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        console.error("Error deleting file:", err);
+      }
+    }
   }
   await Skill.findByIdAndDelete(req.params.id);
   res.redirect("/api/skills/view");
