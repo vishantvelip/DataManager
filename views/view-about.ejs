@@ -3,107 +3,110 @@
 <head>
   <title>About</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #1A252F, #2D3748);
+      background: linear-gradient(135deg, #22223b, #4a4e69 65%);
       min-height: 100vh;
-      color: #1A252F;
+      color: #232946;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 20px;
+      align-items: flex-start;
+      padding: 40px 0;
     }
     .container {
-      max-width: 1000px;
-      width: 90%;
-      background: #FFFFFF;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 32px;
+      max-width: 850px;
+      width: 97%;
+      background: #f7f7fb;
+      border-radius: 18px;
+      box-shadow: 0 6px 36px rgba(34,34,59,0.07);
+      padding: 36px 22px;
+      margin: 0 auto;
     }
     h1 {
-      font-size: 2rem;
+      font-size: 2.3rem;
       font-weight: 700;
-      color: #1A252F;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
+      color: #22223b;
       text-align: center;
+      letter-spacing: 2px;
     }
     .nav-links {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       text-align: center;
     }
     .nav-links a {
-      color: #1E90FF;
+      color: #4f8cff;
       text-decoration: none;
       font-weight: 600;
-      margin: 0 10px;
-      transition: color 0.2s;
+      margin: 0 14px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      font-size: 1.1rem;
     }
     .nav-links a:hover {
-      color: #0072D6;
+      color: #22223b;
+      border-color: #4f8cff;
     }
     table {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+      border-collapse: separate;
+      border-spacing: 0 9px;
+      margin-top: 14px;
     }
     th, td {
-      padding: 12px;
+      padding: 14px 10px;
       text-align: left;
-      border-bottom: 1px solid #E2E8F0;
+      background: #fff;
+      border-bottom: 1.5px solid #e0e4ea;
+      font-size: 1rem;
     }
     th {
-      background: #F8FAFC;
+      background: #e9ecef;
       font-weight: 600;
-      color: #1A252F;
+      color: #232946;
+      border-bottom: 2px solid #bfc6d0;
+    }
+    tr:last-child td {
+      border-bottom: none;
     }
     .action-buttons {
       display: flex;
       gap: 10px;
     }
-    button, a.button {
-      padding: 8px 16px;
+    button, a.button, a.edit {
+      padding: 7px 18px;
       border: none;
-      border-radius: 8px;
-      font-size: 0.875rem;
+      border-radius: 7px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       text-decoration: none;
-      transition: background 0.2s, transform 0.1s;
+      transition: background 0.18s, transform 0.11s;
+      outline: none;
     }
     button.delete {
-      background: #FF4D4F;
-      color: #FFFFFF;
+      background: #e63946;
+      color: #fff;
     }
     button.delete:hover {
-      background: #D9363E;
+      background: #9b2226;
       transform: translateY(-2px);
     }
     a.edit {
-      background: #1E90FF;
-      color: #FFFFFF;
+      background: #4f8cff;
+      color: #fff;
       display: inline-block;
     }
     a.edit:hover {
-      background: #0072D6;
+      background: #22223b;
+      color: #fff;
       transform: translateY(-2px);
     }
-    @media (max-width: 768px) {
-      .container {
-        padding: 16px;
-      }
-      h1 {
-        font-size: 1.5rem;
-      }
-      th, td {
-        font-size: 0.875rem;
-        padding: 8px;
-      }
+    @media (max-width: 700px) {
+      .container { padding: 12px 2vw; }
+      h1 { font-size: 1.35rem; }
+      th, td { font-size: 0.93rem; padding: 9px 3px; }
     }
   </style>
 </head>

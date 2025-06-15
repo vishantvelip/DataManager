@@ -5,50 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Project View (API)</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #1A252F, #2D3748);
+      background: linear-gradient(135deg, #22223b, #4a4e69 65%);
       min-height: 100vh;
-      color: #1A252F;
+      color: #232946;
     }
     .container {
       max-width: 1000px;
-      width: 90%;
+      width: 96%;
       margin: 40px auto;
-      background: #FFFFFF;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 32px;
+      background: #f7f7fb;
+      border-radius: 18px;
+      box-shadow: 0 6px 36px rgba(34,34,59,0.07);
+      padding: 32px 20px;
     }
     .search-form {
       display: flex;
-      gap: 12px;
+      gap: 11px;
       margin-bottom: 24px;
       flex-wrap: wrap;
     }
     .search-form input {
       flex: 1;
       padding: 12px;
-      border: 1px solid #E2E8F0;
+      border: 1px solid #e0e4ea;
       border-radius: 8px;
       font-size: 1rem;
-      min-width: 200px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      min-width: 170px;
+      transition: border-color 0.18s, box-shadow 0.18s;
     }
     .search-form input:focus {
-      border-color: #1E90FF;
-      box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+      border-color: #4f8cff;
+      box-shadow: 0 0 0 2px #4f8cff22;
       outline: none;
     }
     .search-form button {
       padding: 12px 24px;
-      background: #1E90FF;
-      color: #FFFFFF;
+      background: #4f8cff;
+      color: #fff;
       border: none;
       border-radius: 8px;
       font-size: 1rem;
@@ -57,23 +53,24 @@
       transition: background 0.2s, transform 0.1s;
     }
     .search-form button:hover {
-      background: #0072D6;
+      background: #232946;
       transform: translateY(-2px);
     }
     .back-btn {
       display: inline-block;
       padding: 12px 24px;
       background: #34C759;
-      color: #FFFFFF;
+      color: #fff;
       text-decoration: none;
       border-radius: 8px;
       font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       transition: background 0.2s, transform 0.1s;
     }
     .back-btn:hover {
-      background: #2BAE46;
+      background: #232946;
+      color: #fff;
       transform: translateY(-2px);
     }
     .message {
@@ -85,76 +82,82 @@
       margin-bottom: 20px;
     }
     .error-message {
-      background: #FF4D4F;
-      color: #FFFFFF;
+      background: #e63946;
+      color: #fff;
     }
     .success-message {
       background: #34C759;
-      color: #FFFFFF;
+      color: #fff;
     }
     .project-list {
       display: grid;
-      gap: 20px;
+      gap: 16px;
     }
     .project-card {
       display: flex;
-      gap: 24px;
-      background: #F8FAFC;
+      gap: 18px;
+      background: #fff;
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 10px rgba(34,34,59,0.05);
       transition: transform 0.2s;
+      align-items: flex-start;
     }
     .project-card:hover {
       transform: translateY(-4px);
+      box-shadow: 0 8px 18px #4f8cff22;
     }
     .project-card img {
-      width: 160px;
-      height: 120px;
+      width: 130px;
+      height: 90px;
       object-fit: cover;
       border-radius: 8px;
-      background: #E2E8F0;
+      background: #e0e4ea;
     }
     .project-details {
       flex: 1;
     }
     .project-details h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 8px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 7px;
+      color: #232946;
     }
     .project-details p {
-      font-size: 1rem;
-      color: #6B7280;
-      margin-bottom: 8px;
+      font-size: 0.98rem;
+      color: #444;
+      margin-bottom: 7px;
     }
     .action-buttons {
       display: flex;
       gap: 12px;
+      margin-top: 8px;
     }
     .edit-btn, .delete-btn {
-      padding: 10px 20px;
+      padding: 7px 18px;
       border: none;
-      border-radius: 8px;
-      font-size: 0.875rem;
+      border-radius: 7px;
+      font-size: 0.92rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
     }
     .edit-btn {
-      background: #1E90FF;
-      color: #FFFFFF;
+      background: #4f8cff;
+      color: #fff;
     }
     .edit-btn:hover {
-      background: #0072D6;
+      background: #232946;
+      color: #fff;
       transform: translateY(-2px);
     }
     .delete-btn {
-      background: #FF4D4F;
-      color: #FFFFFF;
+      background: #e63946;
+      color: #fff;
     }
     .delete-btn:hover {
-      background: #D9363E;
+      background: #232946;
+      color: #fff;
       transform: translateY(-2px);
     }
     .modal {
@@ -162,73 +165,75 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      width: 100vw;
+      height: 100vh;
+      background: rgba(34,34,59,0.34);
       justify-content: center;
       align-items: center;
       z-index: 1000;
     }
     .modal-content {
-      background: #FFFFFF;
+      background: #fff;
       border-radius: 12px;
       padding: 24px;
-      max-width: 600px;
-      width: 90%;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      max-width: 490px;
+      width: 95%;
+      box-shadow: 0 4px 20px #4f8cff2c;
       position: relative;
     }
     .modal-content h2 {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: center;
+      color: #232946;
     }
     .close-btn {
       position: absolute;
       top: 12px;
       right: 12px;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       cursor: pointer;
       color: #6B7280;
       transition: color 0.2s;
     }
     .close-btn:hover {
-      color: #1A252F;
+      color: #e63946;
     }
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .form-group label {
       display: block;
-      font-size: 0.875rem;
+      font-size: 0.95rem;
       font-weight: 500;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
+      color: #232946;
     }
     .form-group input, .form-group textarea {
       width: 100%;
       padding: 12px;
-      border: 1px solid #E2E8F0;
+      border: 1px solid #e0e4ea;
       border-radius: 8px;
       font-size: 1rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.18s, box-shadow 0.18s;
     }
     .form-group input:focus, .form-group textarea:focus {
-      border-color: #1E90FF;
-      box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+      border-color: #4f8cff;
+      box-shadow: 0 0 0 2px #4f8cff22;
       outline: none;
     }
     .form-group textarea {
       resize: vertical;
-      min-height: 100px;
+      min-height: 80px;
     }
     .form-group input[type="file"] {
       padding: 8px;
     }
     .modal-content button[type="submit"] {
       padding: 12px 24px;
-      background: #1E90FF;
-      color: #FFFFFF;
+      background: #4f8cff;
+      color: #fff;
       border: none;
       border-radius: 8px;
       font-size: 1rem;
@@ -238,23 +243,14 @@
       width: 100%;
     }
     .modal-content button[type="submit"]:hover {
-      background: #0072D6;
+      background: #232946;
       transform: translateY(-2px);
     }
-    @media (max-width: 768px) {
-      .project-card {
-        flex-direction: column;
-      }
-      .project-card img {
-        width: 100%;
-        height: 200px;
-      }
-      .modal-content {
-        padding: 16px;
-      }
-      .container {
-        padding: 16px;
-      }
+    @media (max-width: 700px) {
+      .project-card { flex-direction: column; }
+      .project-card img { width: 100%; height: 100px; }
+      .modal-content { padding: 12px; }
+      .container { padding: 12px 2vw; }
     }
   </style>
 </head>
@@ -302,9 +298,7 @@
           ? `/api/view?search=${encodeURIComponent(searchQuery)}`
           : '/api/view';
         const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Failed to fetch projects');
-        }
+        if (!response.ok) throw new Error('Failed to fetch projects');
         const projects = await response.json();
         const projectList = document.getElementById('project-list');
         projectList.innerHTML = '';
@@ -327,7 +321,7 @@
               <p><strong>Description:</strong> ${project.description || 'No description'}</p>
               <p><strong>Created:</strong> ${project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'Unknown'}</p>
               <div class="action-buttons">
-                <button class="edit-btn" onclick="openEditModal('${project._id}', '${project.name}', '${project.title}', '${project.description}')">Edit</button>
+                <button class="edit-btn" onclick="openEditModal('${project._id}', '${project.name}', '${project.title}', \`${project.description.replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)">Edit</button>
                 <button class="delete-btn" onclick="deleteProject('${project._id}')">Delete</button>
               </div>
             `;
@@ -407,6 +401,12 @@
       fetchProjects(searchQuery);
     });
     document.getElementById('edit-form').addEventListener('submit', updateProject);
+
+    // Close modal when clicking outside of modal-content
+    window.onclick = function(event) {
+      const modal = document.getElementById('edit-modal');
+      if (event.target === modal) closeModal();
+    }
   </script>
 </body>
 </html>

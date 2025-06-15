@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
-const emailRoutes = require('./routes/email');
+const emailRoutes = require("./routes/email");
 const projectRoutes = require("./routes/project");
 const aboutRoutes = require("./routes/about");
 const skillRoutes = require("./routes/skill");
@@ -41,26 +41,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
-app.use("/api", projectRoutes);
+app.use("/api/projects", projectRoutes);
 app.use("/api/about", aboutRoutes);
 app.use("/api/skills", skillRoutes);
 app.use('/api/email', emailRoutes);
 
-
 app.get("/", (req, res) => {
-  res.render("home", { message: null, project: {} });
+  res.render("home", { message: null });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
-    return res.status(400).render("edit-project", {
-      project: req.body,
+    return res.status(400).render("error", {
       message: `File upload error: ${err.message}`,
     });
   } else if (err) {
-    return res.status(400).render("edit-project", {
-      project: req.body,
+    return res.status(400).render("error", {
       message: err.message || "An error occurred",
     });
   }
@@ -69,10 +66,12 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => console.log(`Server started at PORT: ${port}`));
 
-MONGO_URI=mongodb+srv://vishantvelip:vishants@vishant.qceexb7.mongodb.net/?retryWrites=true&w=majority&appName=vishant
+
+MONGO_URI=mongodb://localhost:27017/api9898
 PORT=8000
 # CORS allowed origins (allows all origins for development)
 CORS_ORIGINS=*
+
 
 const { Router } = require("express");
 const Skill = require("../models/skills");
@@ -81,9 +80,16 @@ const path = require("path");
 const fs = require("fs").promises;
 const router = Router();
 
+// Render all skills (normal view)
 router.get("/view", async (req, res) => {
   const skills = await Skill.find();
   res.render("view-skill", { skills, message: null });
+});
+
+// Return all skills as JSON
+router.get("/json", async (req, res) => {
+  const skills = await Skill.find();
+  res.json(skills);
 });
 
 router.get("/create", (req, res) => {
@@ -154,11 +160,7 @@ const mongoose = require("mongoose");
 
 const router = Router();
 
-router.get("/api-view", (req, res) => {
-  res.render("api-view");
-});
-
-// JSON API for all projects
+// Render all projects (normal view)
 router.get("/view", async (req, res) => {
   try {
     const searchQuery = req.query.search || "";
@@ -171,36 +173,64 @@ router.get("/view", async (req, res) => {
         }
       : {};
     const projects = await Project.find(query);
-    res.json(projects);
+    res.render("view-project", { projects, message: null, searchQuery });
+  } catch (error) {
+    res.status(500).render("view-project", {
+      projects: [],
+      message: `Error loading projects: ${error.message}`,
+      searchQuery: "",
+    });
+  }
+});
+
+// All projects in JSON format
+router.get("/json", async (req, res) => {
+  try {
+    const projects = await Project.find();
+    const projectsWithFullImagePath = projects.map((project) => ({
+      ...project.toObject(),
+      projectImg: project.projectImg
+        ? `https://portfolio-api-epzm.onrender.com/${project.projectImg}`
+        : "",
+    }));
+    res.json(projectsWithFullImagePath);
   } catch (error) {
     res.status(500).json({ message: "Failed to load projects", error: error.message });
   }
 });
 
 // Create Project (form)
-router.post("/create-project", upload.single("projectImg"), async (req, res) => {
+router.get("/create", (req, res) => {
+  res.render("edit-project", { project: {}, message: null });
+});
+
+router.post("/create", upload.single("projectImg"), async (req, res) => {
   try {
-    const { name, title, description } = req.body;
-    if (!name || !title || !description) {
-      return res.status(400).render("home", {
+    const { name, title, description, projectsUrl, projectCodeViewurl } = req.body;
+    if (!name || !title || !description || !projectsUrl || !projectCodeViewurl) {
+      return res.status(400).render("edit-project", {
         project: req.body,
-        message: "All fields are required",
+        message: "All fields are required, including Project URL and Code View URL",
       });
     }
     let projectImg = "";
     if (req.file) {
       projectImg = `uploads/${req.file.filename}`;
     }
-    const newProject = new Project({ name, title, description, projectImg });
-    await newProject.save();
-    res.render("home", {
-      project: {},
-      message: "Project created successfully",
+    const newProject = new Project({
+      name,
+      title,
+      description,
+      projectImg,
+      projectsUrl,
+      projectCodeViewurl,
     });
+    await newProject.save();
+    res.redirect("/api/projects/view");
   } catch (error) {
-    res.status(500).render("home", {
+    res.status(500).render("edit-project", {
       project: req.body,
-      message: error.message || "Failed to create project",
+      message: `Failed to create project: ${error.message}`,
     });
   }
 });
@@ -208,68 +238,40 @@ router.post("/create-project", upload.single("projectImg"), async (req, res) => 
 // Edit project form
 router.get("/edit/:id", async (req, res) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      const projects = await Project.find();
-      return res.status(400).render("view-project", {
-        projects,
-        message: "Invalid project ID",
-        searchQuery: "",
-      });
-    }
     const project = await Project.findById(req.params.id);
     if (!project) {
-      const projects = await Project.find();
       return res.status(404).render("view-project", {
-        projects,
+        projects: await Project.find(),
         message: "Project not found",
         searchQuery: "",
       });
     }
     res.render("edit-project", { project, message: null });
   } catch (error) {
-    const projects = await Project.find();
     res.status(500).render("view-project", {
-      projects,
-      message: `Failed to load project: ${error.message}`,
+      projects: await Project.find(),
+      message: `Error loading project: ${error.message}`,
       searchQuery: "",
     });
   }
 });
 
-// Update a project (returns updated project JSON for AJAX, EJS for browser)
-router.post("/update-project/:id", upload.single("projectImg"), async (req, res) => {
+// Update a project
+router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      if (req.accepts("json")) {
-        return res.status(400).json({ message: "Invalid project ID" });
-      }
-      const projects = await Project.find();
-      return res.status(400).render("view-project", {
-        projects,
-        message: "Invalid project ID",
-        searchQuery: "",
-      });
-    }
-    const { name, title, description } = req.body;
+    const { name, title, description, projectsUrl, projectCodeViewurl } = req.body;
     let project = await Project.findById(req.params.id);
     if (!project) {
-      if (req.accepts("json")) {
-        return res.status(404).json({ message: "Project not found" });
-      }
-      const projects = await Project.find();
       return res.status(404).render("view-project", {
-        projects,
+        projects: await Project.find(),
         message: "Project not found",
         searchQuery: "",
       });
     }
-    if (!name || !title || !description) {
-      if (req.accepts("json")) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
+    if (!name || !title || !description || !projectsUrl || !projectCodeViewurl) {
       return res.status(400).render("edit-project", {
         project,
-        message: "All fields are required",
+        message: "All fields are required, including Project URL and Code View URL",
       });
     }
     let projectImg = project.projectImg;
@@ -277,66 +279,36 @@ router.post("/update-project/:id", upload.single("projectImg"), async (req, res)
       if (projectImg) {
         try {
           await fs.unlink(path.join(__dirname, "../public", projectImg));
-        } catch (err) {}
+        } catch (err) {
+          console.error("Error deleting old image:", err);
+        }
       }
       projectImg = `uploads/${req.file.filename}`;
     }
-    project = await Project.findByIdAndUpdate(
-      req.params.id,
-      { name, title, description, projectImg },
-      { new: true }
-    );
-    if (req.accepts("json")) {
-      return res.json(project);
-    }
-    const projects = await Project.find();
-    res.render("view-project", {
-      projects,
-      message: "Project updated successfully",
-      searchQuery: "",
+    await Project.findByIdAndUpdate(req.params.id, {
+      name,
+      title,
+      description,
+      projectImg,
+      projectsUrl,
+      projectCodeViewurl,
     });
+    res.redirect("/api/projects/view");
   } catch (error) {
-    if (req.accepts("json")) {
-      return res.status(500).json({ message: error.message || "Failed to update project" });
-    }
-    const project = await Project.findById(req.params.id);
-    if (!project) {
-      const projects = await Project.find();
-      return res.status(404).render("view-project", {
-        projects,
-        message: "Project not found",
-        searchQuery: "",
-      });
-    }
     res.status(500).render("edit-project", {
-      project,
-      message: error.message || "Failed to update project",
+      project: await Project.findById(req.params.id),
+      message: `Failed to update project: ${error.message}`,
     });
   }
 });
 
-// Delete a project (AJAX and EJS support)
+// Delete a project
 router.post("/delete/:id", async (req, res) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      if (req.accepts("json")) {
-        return res.status(400).json({ message: "Invalid project ID" });
-      }
-      const projects = await Project.find();
-      return res.status(400).render("view-project", {
-        projects,
-        message: "Invalid project ID",
-        searchQuery: "",
-      });
-    }
     const project = await Project.findById(req.params.id);
     if (!project) {
-      if (req.accepts("json")) {
-        return res.status(404).json({ message: "Project not found" });
-      }
-      const projects = await Project.find();
       return res.status(404).render("view-project", {
-        projects,
+        projects: await Project.find(),
         message: "Project not found",
         searchQuery: "",
       });
@@ -344,26 +316,16 @@ router.post("/delete/:id", async (req, res) => {
     if (project.projectImg) {
       try {
         await fs.unlink(path.join(__dirname, "../public", project.projectImg));
-      } catch (err) {}
+      } catch (err) {
+        console.error("Error deleting image:", err);
+      }
     }
     await Project.findByIdAndDelete(req.params.id);
-    if (req.accepts("json")) {
-      return res.json({ message: "Project deleted successfully" });
-    }
-    const projects = await Project.find();
-    res.render("view-project", {
-      projects,
-      message: "Project deleted successfully",
-      searchQuery: "",
-    });
+    res.redirect("/api/projects/view");
   } catch (error) {
-    if (req.accepts("json")) {
-      return res.status(500).json({ message: "Failed to delete project" });
-    }
-    const projects = await Project.find();
     res.status(500).render("view-project", {
-      projects,
-      message: "Failed to delete project",
+      projects: await Project.find(),
+      message: `Failed to delete project: ${error.message}`,
       searchQuery: "",
     });
   }
@@ -408,14 +370,20 @@ router.post('/send-email', async (req, res) => {
 
 module.exports = router;
 
-
 const { Router } = require("express");
 const About = require("../models/about");
 const router = Router();
 
+// Render all about entries (normal view)
 router.get("/view", async (req, res) => {
   const abouts = await About.find();
   res.render("view-about", { abouts, message: null });
+});
+
+// About in JSON format
+router.get("/json", async (req, res) => {
+  const abouts = await About.find();
+  res.json(abouts);
 });
 
 router.get("/create", (req, res) => {
@@ -424,11 +392,11 @@ router.get("/create", (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    const { about } = req.body;
-    if (!about) {
+    const { content } = req.body;
+    if (!content) {
       return res.status(400).render("edit-about", { about: req.body, message: "About field is required" });
     }
-    await About.create({ about });
+    await About.create({ content });
     res.redirect("/api/about/view");
   } catch (error) {
     res.status(500).render("edit-about", { about: req.body, message: error.message });
@@ -442,7 +410,7 @@ router.get("/edit/:id", async (req, res) => {
 
 router.post("/update/:id", async (req, res) => {
   try {
-    await About.findByIdAndUpdate(req.params.id, { about: req.body.about });
+    await About.findByIdAndUpdate(req.params.id, { content: req.body.content });
     res.redirect("/api/about/view");
   } catch (error) {
     res.status(500).render("edit-about", { about: req.body, message: error.message });
@@ -456,17 +424,15 @@ router.post("/delete/:id", async (req, res) => {
 
 module.exports = router;
 
+
 const { Schema, model } = require("mongoose");
 
 const skillSchema = new Schema(
   {
-    skillName: { type: String, 
-    required: true, trim: true
-   },
-    description: { type: String,
-     required: true, trim: true 
+    skillName: { type: String, required: true, trim: true },
+    description: { type: String, required: true, trim: true },
+    projectImg: { type: String, default: "" }
   },
-    
   { timestamps: true }
 );
 
@@ -476,24 +442,18 @@ const { Schema, model } = require("mongoose");
 
 const projectSchema = new Schema(
   {
-    name: { type: String,
-    required: true, trim: true
-  },
-    title: { type: String, 
-    required: true, trim: true 
-  },
-    description: { type: String,
-    required: true, trim: true
-  },
-    projectImg: { type: String,
-    default: "" }
+    name: { type: String, required: true, trim: true },
+    title: { type: String, required: true, trim: true },
+    description: { type: String, required: true, trim: true },
+    projectImg: { type: String, default: "" },
+    projectsUrl: { type: String, required: true, trim: true },
+    projectCodeViewurl: { type: String, required: true, trim: true }, // Moved inside schema
   },
   { timestamps: true }
 );
 
 module.exports = model("Project", projectSchema);
-
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 const aboutSchema = new Schema(
   {
@@ -512,10 +472,7 @@ const aboutSchema = new Schema(
   }
 );
 
-const About = model('About', aboutSchema);
-
-module.exports = About;
-
+module.exports = model('About', aboutSchema);
 const multer = require("multer");
 const path = require("path");
 
@@ -542,10 +499,4 @@ const upload = multer({
 
 module.exports = upload;
 
-fix all codes and create model UI i want pages 
- view-project details normal and json formet both and 
- i want view-skills page in json formet  and i want about-page
-  json formet  
-  and in home add options  like add-projects details,  add-about 
-  and add skills options when i click on add-skills render  form to add skill details  
-  
+i want to Deploy  this project  on Netlify  what i need to add 
