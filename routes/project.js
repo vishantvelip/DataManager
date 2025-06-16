@@ -1,9 +1,9 @@
+
 const { Router } = require("express");
 const Project = require("../models/project");
 const fs = require("fs").promises;
 const path = require("path");
 const upload = require("../middleware/multerConfig");
-const mongoose = require("mongoose");
 
 const router = Router();
 
@@ -37,7 +37,7 @@ router.get("/json", async (req, res) => {
     const projectsWithFullImagePath = projects.map((project) => ({
       ...project.toObject(),
       projectImg: project.projectImg
-        ? `https://portfolio-api-epzm.onrender.com/${project.projectImg}`
+        ? `/uploads/${path.basename(project.projectImg)}`
         : "",
     }));
     res.json(projectsWithFullImagePath);
@@ -62,7 +62,7 @@ router.post("/create", upload.single("projectImg"), async (req, res) => {
     }
     let projectImg = "";
     if (req.file) {
-      projectImg = `uploads/${req.file.filename}`;
+      projectImg = `uploads/${req.file.filename}`; // relative path for static serving
     }
     const newProject = new Project({
       name,
@@ -87,16 +87,18 @@ router.get("/edit/:id", async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) {
+      const projects = await Project.find();
       return res.status(404).render("view-project", {
-        projects: await Project.find(),
+        projects,
         message: "Project not found",
         searchQuery: "",
       });
     }
     res.render("edit-project", { project, message: null });
   } catch (error) {
+    const projects = await Project.find();
     res.status(500).render("view-project", {
-      projects: await Project.find(),
+      projects,
       message: `Error loading project: ${error.message}`,
       searchQuery: "",
     });
@@ -109,8 +111,9 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
     const { name, title, description, projectsUrl, projectCodeViewurl } = req.body;
     let project = await Project.findById(req.params.id);
     if (!project) {
+      const projects = await Project.find();
       return res.status(404).render("view-project", {
-        projects: await Project.find(),
+        projects,
         message: "Project not found",
         searchQuery: "",
       });
@@ -127,7 +130,9 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
         try {
           await fs.unlink(path.join(__dirname, "../public", projectImg));
         } catch (err) {
-          console.error("Error deleting old image:", err);
+          if (err.code !== "ENOENT") {
+            console.error("Error deleting old image:", err);
+          }
         }
       }
       projectImg = `uploads/${req.file.filename}`;
@@ -142,8 +147,9 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
     });
     res.redirect("/api/projects/view");
   } catch (error) {
+    const project = await Project.findById(req.params.id);
     res.status(500).render("edit-project", {
-      project: await Project.findById(req.params.id),
+      project,
       message: `Failed to update project: ${error.message}`,
     });
   }
@@ -154,8 +160,9 @@ router.post("/delete/:id", async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) {
+      const projects = await Project.find();
       return res.status(404).render("view-project", {
-        projects: await Project.find(),
+        projects,
         message: "Project not found",
         searchQuery: "",
       });
@@ -164,14 +171,17 @@ router.post("/delete/:id", async (req, res) => {
       try {
         await fs.unlink(path.join(__dirname, "../public", project.projectImg));
       } catch (err) {
-        console.error("Error deleting image:", err);
+        if (err.code !== "ENOENT") {
+          console.error("Error deleting image:", err);
+        }
       }
     }
     await Project.findByIdAndDelete(req.params.id);
     res.redirect("/api/projects/view");
   } catch (error) {
+    const projects = await Project.find();
     res.status(500).render("view-project", {
-      projects: await Project.find(),
+      projects,
       message: `Failed to delete project: ${error.message}`,
       searchQuery: "",
     });
