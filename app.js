@@ -48,6 +48,10 @@ app.get("/", (req, res) => {
   res.render("home", { message: null });
 });
 
+app.get("/Hierme",(req,res) =>{
+  res.render("HierMe")
+})
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
