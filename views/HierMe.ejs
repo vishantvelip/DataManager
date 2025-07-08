@@ -205,12 +205,14 @@
  text-align: left;
  }
  .calculator-form select,
- .calculator-form input[type="checkbox"] {
+ .calculator-form input[type="checkbox"],
+ .calculator-form input[type="email"] {
  margin-right: 10px;
  margin-bottom: 14px;
  cursor: pointer;
  }
- .calculator-form select {
+ .calculator-form select,
+ .calculator-form input[type="email"] {
  padding: 10px;
  border: 2px solid var(--border);
  border-radius: 8px;
@@ -221,7 +223,8 @@
  max-width: 400px;
  transition: border-color 0.3s ease;
  }
- .calculator-form select:hover {
+ .calculator-form select:hover,
+ .calculator-form input[type="email"]:hover {
  border-color: var(--primary);
  }
  .calculator-form .checkbox-group {
@@ -274,6 +277,28 @@
  .fee-display span {
  color: var(--primary);
  font-weight: 700;
+ }
+ .payment-container {
+ margin-top: 20px;
+ display: flex;
+ gap: 15px;
+ justify-content: center;
+ }
+ #pay-now-btn {
+ background: var(--accent);
+ border-color: var(--accent);
+ }
+ #pay-now-btn:hover {
+ background: var(--primary);
+ border-color: var(--primary);
+ }
+ #pay-later-btn {
+ background: var(--primary);
+ border-color: var(--primary);
+ }
+ #pay-later-btn:hover {
+ background: var(--accent);
+ border-color: var(--accent);
  }
  .hire-me-form {
  max-width: 400px;
@@ -341,6 +366,9 @@
  border-top: 5px solid var(--primary);
  border-radius: 50%;
  animation: spin 1.1s linear infinite;
+ }
+ .hidden {
+ display: none;
  }
  @keyframes spin {
  to { transform: rotate(360deg); }
@@ -418,7 +446,8 @@
  .hire-me-card .price { font-size: 1.5rem; }
  .hire-me-card h3 { font-size: 1.2rem; }
  .section-title { font-size: 1.6rem; }
- .calculator-form select { font-size: 0.9rem; }
+ .calculator-form select,
+ .calculator-form input[type="email"] { font-size: 0.9rem; }
  .fee-display { font-size: 1rem; }
  .nav-links {
  display: none;
@@ -442,6 +471,10 @@
  }
  .hamburger {
  display: block;
+ }
+ .payment-container {
+ flex-direction: column;
+ align-items: center;
  }
  @keyframes slide-down {
  from { opacity: 0; transform: translateY(-20px); }
@@ -511,6 +544,8 @@
  <section class="calculator-section fade-in">
  <h2 class="section-title">Estimate Your Project Cost</h2>
  <form id="calculator-form" class="calculator-form">
+ <label for="payment-email">Your Email (for payment confirmation)</label>
+ <input type="email" id="payment-email" name="payment-email" required placeholder="Enter your email" />
  <label for="website-type">Select Website Type</label>
  <select id="website-type" name="website-type">
  <option value="0">None</option>
@@ -522,7 +557,7 @@
  </select>
  <div class="checkbox-group">
  <label>Additional Tasks</label>
- <label><input type="checkbox" name="tasks" value="12"> Home Page Design (12 hours)</label>
+ <label><input type="checkbox" name="tasks" value="fixed:1"> Home Page Design (₹1)</label>
  <label><input type="checkbox" name="tasks" value="8"> About/Contact Page (8 hours)</label>
  <label><input type="checkbox" name="tasks" value="60"> Blog System with Admin Panel (60 hours)</label>
  <label><input type="checkbox" name="tasks" value="12"> Responsive Coding (12 hours)</label>
@@ -540,7 +575,7 @@
  </section>
 
  <!-- Contact Form -->
- <section class="hire-me-form fade-in" id="contact-form">
+ <section class="hire-me-form fade-in hidden" id="contact-form">
  <h2 class="section-title">Get in Touch</h2>
  <form id="hire-me-form">
  <label for="name">Name</label>
@@ -552,6 +587,11 @@
  <button type="submit">Send Message</button>
  <div id="form-message" class="form-message"></div>
  </form>
+ <div class="payment-container hidden" id="payment-container">
+ <button type="button" id="pay-now-btn" class="btn">Pay Now via UPI</button>
+ <button type="button" id="pay-later-btn" class="btn">Pay Later</button>
+ <div id="payment-message" class="form-message"></div>
+ </div>
  </section>
  </main>
 
@@ -570,11 +610,12 @@
  // API base URLs
  const API_BASE_A = 'https://database-managemet-api.onrender.com';
  const API_BASE_B = 'https://database-managemet-api.vercel.app';
- const MAX_RETRIES = 3; // Max retry attempts
+ const MAX_RETRIES = 3;
 
- // Global variables to store selected items and total fee
+ // Global variables
  let selectedItems = [];
  let totalFee = 0;
+ let totalHours = 0;
 
  // Save data to localStorage with expiration
  function setCache(key, value, ttl) {
@@ -602,7 +643,7 @@
  }
  }
 
- // Fetch with timeout and failover between two APIs
+ // Fetch with timeout and failover
  async function fetchWithTimeoutAndFailover(endpoint, options = {}, timeout = 10000) {
  const endpoints = [`${API_BASE_A}/${endpoint}`, `${API_BASE_B}/${endpoint}`];
  let lastError;
@@ -646,30 +687,30 @@
  function renderError(container, message, origin) {
  container.innerHTML = `<p class="fade-in">${message}</p>`;
  observeFadeIn('.fade-in');
- if (window.console)
- console.error(`[${origin}] ${message}`);
+ if (window.console) console.error(`[${origin}] ${message}`);
  }
 
  window.observeFadeIn = observeFadeIn;
  window.renderError = renderError;
 
  // Send Email via API
- async function sendEmail(name, email, message, selectedItems, totalFee) {
+ async function sendEmail(name, email, message, selectedItems, totalFee, isPayment = false) {
  const container = document.getElementById('form-message');
  container.innerHTML = '<div class="loader">Sending email...</div>';
  container.style.display = 'block';
  try {
  const response = await fetchWithTimeoutAndFailover('api/email/send-email', {
  method: 'POST',
- headers: {
- 'Content-Type': 'application/json'
- },
- body: JSON.stringify({ name, email, message, selectedItems, totalFee })
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ name, email, message, selectedItems, totalFee, isPayment })
  });
  const data = await response.json();
  if (data.error) throw new Error(data.error);
- container.innerHTML = `<p class="form-message success fade-in">${data.message || 'Message sent successfully!'}</p>`;
+ container.innerHTML = `<p class="form-message success fade-in">${data.message || 'Email sent successfully!'}</p>`;
  observeFadeIn('.form-message.success.fade-in');
+ if (!isPayment) {
+ document.getElementById('payment-container').classList.remove('hidden');
+ }
  return true;
  } catch (error) {
  container.innerHTML = `<p class="form-message error fade-in">Failed to send email: ${error.message}</p>`;
@@ -683,11 +724,67 @@
  navigator.clipboard.writeText(upiId).then(() => {
  const copyMessage = document.getElementById('copy-message');
  copyMessage.classList.add('visible');
- setTimeout(() => {
- copyMessage.classList.remove('visible');
- }, 2000);
- }).catch(err => {
- console.error('Failed to copy UPI ID:', err);
+ setTimeout(() => copyMessage.classList.remove('visible'), 2000);
+ }).catch(err => console.error('Failed to copy UPI ID:', err));
+ }
+
+ // Generate UPI deep link
+ function generateUpiLink(amount, upiId, name, transactionNote, transactionId) {
+ const params = new URLSearchParams({
+ pa: upiId,
+ pn: name,
+ tn: transactionNote,
+ am: amount,
+ cu: 'INR',
+ tr: transactionId,
+ });
+ return `upi://pay?${params.toString()}`;
+ }
+
+ // Handle Pay Now and Pay Later buttons
+ function initiatePaymentOptions() {
+ const payNowBtn = document.getElementById('pay-now-btn');
+ const payLaterBtn = document.getElementById('pay-later-btn');
+ const paymentMessage = document.getElementById('payment-message');
+
+ // Pay Now handler
+ payNowBtn.addEventListener('click', async () => {
+ if (totalFee <= 0) {
+ paymentMessage.innerHTML = '<p class="form-message error fade-in">Please select items to calculate a fee.</p>';
+ observeFadeIn('.form-message.error.fade-in');
+ return;
+ }
+ const emailInput = document.getElementById('payment-email');
+ const email = emailInput.value.trim();
+ if (!email) {
+ paymentMessage.innerHTML = '<p class="form-message error fade-in">Please enter a valid email address.</p>';
+ observeFadeIn('.form-message.error.fade-in');
+ return;
+ }
+ const upiId = '9420970930@ibl';
+ const payeeName = 'Vishant Velip';
+ const transactionNote = 'Website Development Payment';
+ const transactionId = `TXN${Date.now()}`;
+ const upiLink = generateUpiLink(totalFee, upiId, payeeName, transactionNote, transactionId);
+
+ let message = `Payment initiated for project.\nTransaction ID: ${transactionId}\nNote: Payment is pending confirmation via UPI.\n\nSelected Project Items:\n${selectedItems.length > 0 ? '- ' + selectedItems.join('\n- ') : 'None'}\n\nTotal Estimated Cost: ₹${totalFee.toLocaleString('en-IN')}`;
+
+ const success = await sendEmail('Client', email, message, selectedItems, totalFee, true);
+ if (success) {
+ paymentMessage.innerHTML = '<p class="form-message success fade-in">Redirecting to UPI app...</p>';
+ observeFadeIn('.form-message.success.fade-in');
+ setTimeout(() => window.location.href = upiLink, 1000);
+ } else {
+ paymentMessage.innerHTML = '<p class="form-message error fade-in">Failed to send payment email. Please try again.</p>';
+ observeFadeIn('.form-message.error.fade-in');
+ }
+ });
+
+ // Pay Later handler
+ payLaterBtn.addEventListener('click', () => {
+ paymentMessage.innerHTML = '<p class="form-message success fade-in">You have chosen to pay later. We will contact you with payment details.</p>';
+ observeFadeIn('.form-message.success.fade-in');
+ document.getElementById('payment-container').classList.add('hidden');
  });
  }
 
@@ -698,34 +795,43 @@
  const websiteTypeText = websiteTypeSelect.options[websiteTypeSelect.selectedIndex].text;
 
  const tasks = Array.from(document.querySelectorAll('input[name="tasks"]:checked'));
- const tasksHours = tasks.reduce((sum, task) => sum + parseInt(task.value), 0);
- const tasksLabels = tasks.map(task => task.parentElement.textContent.trim());
-
- const totalHours = websiteTypeValue + tasksHours;
- const hourlyRate = 1500; // Updated hourly rate
- totalFee = totalHours * hourlyRate; // Update global totalFee
-
- // Update selected items for display and email
- selectedItems = [];
- if (websiteTypeValue > 0) {
- selectedItems.push(websiteTypeText);
+ let tasksHours = 0;
+ let fixedCosts = 0;
+ const tasksLabels = tasks.map(task => {
+ const label = task.parentElement.textContent.trim();
+ const value = task.value;
+ if (value.startsWith('fixed:')) {
+ fixedCosts += parseFloat(value.split(':')[1]);
+ return label;
+ } else {
+ tasksHours += parseInt(value);
+ return label;
  }
+ });
+
+ totalHours = websiteTypeValue + tasksHours;
+ const hourlyRate = 1500;
+ totalFee = (totalHours * hourlyRate) + fixedCosts;
+
+ selectedItems = [];
+ if (websiteTypeValue > 0) selectedItems.push(websiteTypeText);
  selectedItems.push(...tasksLabels);
 
- // Update selected items list for display
  const selectedItemsList = document.getElementById('selected-items-list');
  selectedItemsList.innerHTML = '';
-
  if (selectedItems.length > 0) {
  selectedItems.forEach(item => {
  const li = document.createElement('li');
  li.textContent = item;
  selectedItemsList.appendChild(li);
  });
+ document.getElementById('contact-form').classList.remove('hidden');
  } else {
  const li = document.createElement('li');
  li.textContent = 'No items selected';
  selectedItemsList.appendChild(li);
+ document.getElementById('contact-form').classList.add('hidden');
+ document.getElementById('payment-container').classList.add('hidden');
  }
 
  document.getElementById('total-hours').textContent = totalHours;
@@ -748,7 +854,6 @@
  const email = document.getElementById('email').value;
  let message = document.getElementById('message').value;
 
- // Append selected items and total fee to the message
  if (selectedItems.length > 0) {
  message += '\n\nSelected Project Items:\n- ' + selectedItems.join('\n- ');
  } else {
@@ -759,8 +864,6 @@
  const success = await sendEmail(name, email, message, selectedItems, totalFee);
  if (success) {
  form.reset();
- document.getElementById('form-message').innerHTML = '<p class="form-message success fade-in">Message sent successfully!</p>';
- observeFadeIn('.form-message.success.fade-in');
  }
  });
 
@@ -772,7 +875,8 @@
  // Initialize
  document.addEventListener('DOMContentLoaded', () => {
  observeFadeIn('.fade-in');
- calculateCost(); // Initialize calculator display
+ calculateCost();
+ initiatePaymentOptions();
  });
  </script>
 </body>
