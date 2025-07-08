@@ -49,7 +49,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/Hierme",(req,res) =>{
-  res.render("HierMe")
+  res.send("HierMe")
 })
 
 // Error handling middleware
