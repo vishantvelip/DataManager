@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Hire Vishant Velip - Full-Stack Developer</title>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+ <style>
+ :root {
+ --main-bg: #0c1624;
+ --profile-glow: #3ea6ff;
+ --profile-glow-secondary: #1e3759;
+ --card-bg: #111b2f;
+ --primary: #3ea6ff;
+ --accent: #ff63a5;
+ --white: #fff;
+ --text: #e6e6e6;
+ --muted: #adb7c2;
+ --border: #22314d;
+ --radius: 20px;
+ }
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+ body {
+ min-height: 100vh;
+ background: var(--main-bg);
+ color: var(--text);
+ font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+ letter-spacing: 0.03em;
+ overflow-x: hidden;
+ }
+ nav {
+ width: 100%;
+ background: transparent;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: 20px 6vw;
+ font-size: 1.1rem;
+ z-index: 10;
+ position: relative;
+ }
+ .logo {
+ font-weight: 700;
+ color: var(--white);
+ font-size: 1.8rem;
+ letter-spacing: 2px;
+ transition: transform 0.3s ease;
+ }
+ .logo:hover { transform: scale(1.05); }
+ .logo span { color: var(--primary); }
+ .nav-links {
+ display: flex;
+ gap: 35px;
+ align-items: center;
+ }
+ .nav-links a {
+ color: var(--white);
+ text-decoration: none;
+ font-weight: 500;
+ position: relative;
+ padding: 5px 0;
+ transition: color 0.3s ease;
+ }
+ .nav-links a:hover {
+ color: var(--primary);
+ }
+ .nav-links a::after {
+ content: "";
+ position: absolute;
+ width: 0;
+ height: 2px;
+ background: var(--primary);
+ bottom: 0;
+ left: 0;
+ transition: width 0.3s ease;
+ }
+ .nav-links a:hover::after {
+ width: 100%;
+ }
+ .hamburger {
+ display: none;
+ font-size: 1.5rem;
+ color: var(--white);
+ cursor: pointer;
+ transition: transform 0.3s ease;
+ }
+ .hamburger.active i::before {
+ content: "\f00d"; /* Font Awesome 'X' icon */
+ }
+ .main-content {
+ max-width: 1200px;
+ margin: 50px auto;
+ padding: 0 20px;
+ text-align: center;
+ }
+ .hero-section {
+ margin-bottom: 40px;
+ animation: slide-in-left 1s ease-out;
+ }
+ .hero-section h1 {
+ font-size: 2.5rem;
+ font-weight: 700;
+ color: var(--white);
+ margin-bottom: 12px;
+ }
+ .hero-section h1 span { color: var(--primary); }
+ .hero-section p {
+ font-size: 1.2rem;
+ color: var(--muted);
+ max-width: 600px;
+ margin: 0 auto;
+ line-height: 1.8;
+ }
+ .hire-me-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+ gap: 24px;
+ margin-bottom: 40px;
+ animation: slide-in-right 1s ease-out;
+ }
+ .hire-me-card {
+ background: var(--card-bg);
+ padding: 28px;
+ border-radius: var(--radius);
+ box-shadow: 0 4px 20px #3ea6ff15;
+ transition: transform 0.3s ease, box-shadow 0.3s ease;
+ }
+ .hire-me-card:hover {
+ transform: translateY(-8px) scale(1.02);
+ box-shadow: 0 8px 30px #3ea6ff33;
+ }
+ .hire-me-card h3 {
+ font-size: 1.5rem;
+ font-weight: 600;
+ color: var(--white);
+ margin-bottom: 12px;
+ }
+ .hire-me-card p {
+ font-size: 1rem;
+ color: var(--muted);
+ margin-bottom: 15px;
+ line-height: 1.6;
+ }
+ .hire-me-card .price {
+ font-size: 1.9rem;
+ color: var(--primary);
+ font-weight: 700;
+ margin-bottom: 12px;
+ }
+ .hire-me-card ul {
+ list-style: none;
+ padding: 0;
+ color: var(--muted);
+ font-size: 0.95rem;
+ text-align: left;
+ margin-bottom: 15px;
+ }
+ .hire-me-card ul li {
+ margin-bottom: 10px;
+ position: relative;
+ padding-left: 20px;
+ }
+ .hire-me-card ul li::before {
+ content: "\f058"; /* Font Awesome check-circle */
+ font-family: "Font Awesome 6 Free";
+ position: absolute;
+ left: 0;
+ color: var(--primary);
+ font-size: 0.9rem;
+ }
+ .hire-me-card .btn {
+ padding: 10px 24px;
+ border-radius: 10px;
+ font-size: 1rem;
+ font-weight: 600;
+ cursor: pointer;
+ border: 2px solid var(--primary);
+ background: var(--primary);
+ color: var(--white);
+ text-decoration: none;
+ display: inline-block;
+ transition: transform 0.2s ease, box-shadow 0.2s ease;
+ margin: 5px;
+ }
+ .hire-me-card .btn:hover {
+ background: var(--accent);
+ border-color: var(--accent);
+ transform: scale(1.05);
+ box-shadow: 0 0 15px #ff63a544;
+ }
+ .calculator-section {
+ background: var(--card-bg);
+ padding: 28px;
+ border-radius: var(--radius);
+ box-shadow: 0 4px 20px #3ea6ff15;
+ margin-bottom: 40px;
+ animation: slide-in-left 1s ease-out;
+ }
+ .calculator-form label {
+ display: block;
+ color: var(--white);
+ font-size: 1.1rem;
+ font-weight: 500;
+ margin-bottom: 10px;
+ text-align: left;
+ }
+ .calculator-form select,
+ .calculator-form input[type="checkbox"] {
+ margin-right: 10px;
+ margin-bottom: 14px;
+ cursor: pointer;
+ }
+ .calculator-form select {
+ padding: 10px;
+ border: 2px solid var(--border);
+ border-radius: 8px;
+ background: var(--card-bg);
+ color: var(--text);
+ font-size: 1rem;
+ width: 100%;
+ max-width: 400px;
+ transition: border-color 0.3s ease;
+ }
+ .calculator-form select:hover {
+ border-color: var(--primary);
+ }
+ .calculator-form .checkbox-group {
+ margin-bottom: 20px;
+ }
+ .calculator-form .checkbox-group label {
+ font-size: 0.95rem;
+ display: flex;
+ align-items: center;
+ transition: color 0.3s ease;
+ }
+ .calculator-form .checkbox-group label:hover {
+ color: var(--primary);
+ }
+ .selected-items {
+ margin-top: 20px;
+ text-align: left;
+ }
+ .selected-items h3 {
+ font-size: 1.2rem;
+ color: var(--white);
+ margin-bottom: 10px;
+ }
+ .selected-items ul {
+ list-style: none;
+ padding: 0;
+ color: var(--muted);
+ font-size: 0.95rem;
+ }
+ .selected-items ul li {
+ margin-bottom: 8px;
+ position: relative;
+ padding-left: 20px;
+ }
+ .selected-items ul li::before {
+ content: "\f058"; /* Font Awesome check-circle */
+ font-family: "Font Awesome 6 Free";
+ position: absolute;
+ left: 0;
+ color: var(--primary);
+ font-size: 0.9rem;
+ }
+ .fee-display {
+ margin-top: 20px;
+ font-size: 1.3rem;
+ font-weight: 500;
+ color: var(--white);
+ animation: pulse 2s infinite;
+ }
+ .fee-display span {
+ color: var(--primary);
+ font-weight: 700;
+ }
+ .hire-me-form {
+ max-width: 400px;
+ margin: 0 auto;
+ animation: slide-in-right 1s ease-out;
+ }
+ .section-title {
+ font-size: 2.2rem;
+ font-weight: 700;
+ color: var(--white);
+ margin-bottom: 20px;
+ text-shadow: 0 0 10px #3ea6ff33;
+ }
+ .hire-me-form label {
+ display: block;
+ color: var(--white);
+ font-size: 1rem;
+ font-weight: 500;
+ margin-bottom: 8px;
+ text-align: left;
+ }
+ .hire-me-form input,
+ .hire-me-form textarea {
+ width: 100%;
+ padding: 10px;
+ border: 2px solid var(--border);
+ border-radius: 8px;
+ background: var(--card-bg);
+ color: var(--text);
+ font-size: 1rem;
+ margin-bottom: 16px;
+ transition: border-color 0.3s ease;
+ }
+ .hire-me-form input:hover,
+ .hire-me-form textarea:hover {
+ border-color: var(--primary);
+ }
+ .hire-me-form button {
+ background: var(--primary);
+ color: var(--white);
+ padding: 10px 24px;
+ border: none;
+ border-radius: 10px;
+ font-size: 1.1rem;
+ font-weight: 600;
+ cursor: pointer;
+ transition: transform 0.2s ease, box-shadow 0.2s ease;
+ }
+ .hire-me-form button:hover {
+ background: var(--accent);
+ transform: scale(1.05);
+ box-shadow: 0 0 15px #ff63a544;
+ }
+ .form-message {
+ margin-top: 10px;
+ font-size: 1rem;
+ }
+ .form-message.success { color: var(--primary); }
+ .form-message.error { color: var(--accent); }
+ .loader {
+ margin: 20px auto;
+ width: 56px;
+ height: 56px;
+ border: 5px solid #3ea6ff44;
+ border-top: 5px solid var(--primary);
+ border-radius: 50%;
+ animation: spin 1.1s linear infinite;
+ }
+ @keyframes spin {
+ to { transform: rotate(360deg); }
+ }
+ .fade-in {
+ opacity: 0;
+ transform: translateY(20px);
+ animation: fadein 1s ease-out forwards;
+ }
+ @keyframes fadein {
+ to { opacity: 1; transform: none; }
+ }
+ @keyframes slide-in-left {
+ from { opacity: 0; transform: translateX(-50px); }
+ to { opacity: 1; transform: none; }
+ }
+ @keyframes slide-in-right {
+ from { opacity: 0; transform: translateX(50px); }
+ to { opacity: 1; transform: none; }
+ }
+ @keyframes pulse {
+ 0%, 100% { transform: scale(1); }
+ 50% { transform: scale(1.02); }
+ }
+ footer {
+ text-align: center;
+ padding: 30px;
+ color: var(--muted);
+ font-size: 1rem;
+ }
+ .social-links {
+ display: flex;
+ justify-content: center;
+ gap: 20px;
+ margin-bottom: 20px;
+ }
+ .social-links a {
+ color: var(--primary);
+ font-size: 1.3rem;
+ background: #1c2c4c;
+ padding: 10px;
+ border-radius: 8px;
+ transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+ }
+ .social-links a:hover {
+ background: var(--primary);
+ color: var(--white);
+ transform: rotate(5deg) scale(1.1);
+ }
+ .payment-details {
+ margin: 15px 0;
+ }
+ .payment-details p {
+ font-size: 1rem;
+ color: var(--muted);
+ margin-bottom: 12px;
+ }
+ .upi-id {
+ font-size: 1.1rem;
+ color: var(--primary);
+ font-weight: 600;
+ }
+ .copy-message {
+ display: none;
+ font-size: 0.9rem;
+ color: var(--primary);
+ margin-top: 5px;
+ }
+ .copy-message.visible {
+ display: block;
+ }
+ @media (max-width: 700px) {
+ .hero-section h1 { font-size: 1.8rem; }
+ .hero-section p { font-size: 1rem; }
+ .hire-me-card .price { font-size: 1.5rem; }
+ .hire-me-card h3 { font-size: 1.2rem; }
+ .section-title { font-size: 1.6rem; }
+ .calculator-form select { font-size: 0.9rem; }
+ .fee-display { font-size: 1rem; }
+ .nav-links {
+ display: none;
+ flex-direction: column;
+ position: absolute;
+ top: 80px;
+ left: 0;
+ width: 100%;
+ background: var(--card-bg);
+ padding: 20px;
+ text-align: center;
+ box-shadow: 0 4px 20px #3ea6ff15;
+ animation: slide-down 0.3s ease-out;
+ }
+ .nav-links.active {
+ display: flex;
+ }
+ .nav-links a {
+ font-size: 1.1rem;
+ margin: 10px 0;
+ }
+ .hamburger {
+ display: block;
+ }
+ @keyframes slide-down {
+ from { opacity: 0; transform: translateY(-20px); }
+ to { opacity: 1; transform: none; }
+ }
+ }
+ </style>
+</head>
+<body>
+ <!-- Navbar -->
+ <nav role="navigation" aria-label="Main navigation">
+ <div class="logo">Hire <span>Vishant Velip</span></div>
+ <div class="hamburger" aria-label="Toggle navigation">
+ <i class="fas fa-bars"></i>
+ </div>
+ <div class="nav-links">
+ <a href="mailto:webdeveloper10980@gmail.com" aria-label="Email contact">Contact Me</a>
+ <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub profile">GitHub</a>
+ <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn profile">LinkedIn</a>
+ <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter profile">Twitter</a>
+ </div>
+ </nav>
+
+ <!-- Main Content -->
+ <main class="main-content">
+ <section class="hero-section">
+ <h1>Hire <span>Vishant Velip</span></h1>
+ <p class="fade-in">
+ I'm a passionate full-stack developer specializing in frontend and backend solutions for all types of websites. 
+ Whether you need a stunning user interface, robust APIs, or a complete web application, I'm here to deliver high-quality, 
+ tailored solutions to bring your vision to life.
+ </p>
+ </section>
+
+ <!-- Hire Me Section -->
+ <section class="hire-me-grid">
+ <div class="hire-me-card fade-in">
+ <h3>My Rate</h3>
+ <div class="price">₹1,500 / Hour</div>
+ <p>Affordable hourly rate for custom web development projects. Estimated costs based on project size:</p>
+ <ul>
+ <li>Small website (10-20 hours): ₹15,000 - ₹30,000</li>
+ <li>Medium website (20-50 hours): ₹30,000 - ₹75,000</li>
+ <li>Large project (50+ hours): Custom Quote</li>
+ </ul>
+ <div class="payment-details">
+ <p>Pay via UPI: <span class="upi-id">9420970930@ibl</span></p>
+ <p>Please include your email in the payment remarks for reference.</p>
+ <button class="btn" onclick="copyUpiId('9420970930@ibl')" aria-label="Copy UPI ID">Copy UPI ID</button>
+ <div id="copy-message" class="copy-message">UPI ID copied to clipboard!</div>
+ </div>
+ <a href="mailto:webdeveloper10980@gmail.com" class="btn">Get a Quote</a>
+ </div>
+ <div class="hire-me-card fade-in">
+ <h3>My Services</h3>
+ <p>Comprehensive web development services, including:</p>
+ <ul>
+ <li>Frontend: Responsive, modern UI with HTML, CSS, JavaScript</li>
+ <li>Backend: Secure APIs, databases, and server-side logic</li>
+ <li>Full-Stack: End-to-end solutions from concept to deployment</li>
+ </ul>
+ <a href="#contact-form" class="btn">Hire Me Now</a>
+ </div>
+ </section>
+
+ <!-- Project Calculator -->
+ <section class="calculator-section fade-in">
+ <h2 class="section-title">Estimate Your Project Cost</h2>
+ <form id="calculator-form" class="calculator-form">
+ <label for="website-type">Select Website Type</label>
+ <select id="website-type" name="website-type">
+ <option value="0">None</option>
+ <option value="16">Simple static website (16 hours)</option>
+ <option value="40">Portfolio or business site (40 hours)</option>
+ <option value="80">Blog platform (80 hours)</option>
+ <option value="120">E-commerce site (120 hours)</option>
+ <option value="240">Custom web app (240 hours)</option>
+ </select>
+ <div class="checkbox-group">
+ <label>Additional Tasks</label>
+ <label><input type="checkbox" name="tasks" value="12"> Home Page Design (12 hours)</label>
+ <label><input type="checkbox" name="tasks" value="8"> About/Contact Page (8 hours)</label>
+ <label><input type="checkbox" name="tasks" value="60"> Blog System with Admin Panel (60 hours)</label>
+ <label><input type="checkbox" name="tasks" value="12"> Responsive Coding (12 hours)</label>
+ <label><input type="checkbox" name="tasks" value="12"> SEO Setup & Testing (12 hours)</label>
+ </div>
+ <div class="selected-items">
+ <h3>Selected Items:</h3>
+ <ul id="selected-items-list"></ul>
+ </div>
+ <div class="fee-display">
+ Estimated Hours: <span id="total-hours">0</span> hours<br>
+ Total Fee: <span id="total-fee">₹0</span>
+ </div>
+ </form>
+ </section>
+
+ <!-- Contact Form -->
+ <section class="hire-me-form fade-in" id="contact-form">
+ <h2 class="section-title">Get in Touch</h2>
+ <form id="hire-me-form">
+ <label for="name">Name</label>
+ <input type="text" id="name" name="name" required />
+ <label for="email">Email</label>
+ <input type="email" id="email" name="email" required />
+ <label for="message">Project Details</label>
+ <textarea id="message" name="message" rows="5" required placeholder="Describe your project needs..."></textarea>
+ <button type="submit">Send Message</button>
+ <div id="form-message" class="form-message"></div>
+ </form>
+ </section>
+ </main>
+
+ <!-- Footer -->
+ <footer>
+ <div class="social-links">
+ <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub profile"><i class="fab fa-github"></i></a>
+ <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn profile"><i class="fab fa-linkedin"></i></a>
+ <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter profile"><i class="fab fa-twitter"></i></a>
+ <a href="mailto:webdeveloper10980@gmail.com" aria-label="Email contact"><i class="fas fa-envelope"></i></a>
+ </div>
+ <p>© 2025 Vishant Velip. All rights reserved.</p>
+ </footer>
+
+ <script>
+ // API base URLs
+ const API_BASE_A = 'https://database-managemet-api.onrender.com';
+ const API_BASE_B = 'https://database-managemet-api.vercel.app';
+ const MAX_RETRIES = 3; // Max retry attempts
+
+ // Global variables to store selected items and total fee
+ let selectedItems = [];
+ let totalFee = 0;
+
+ // Save data to localStorage with expiration
+ function setCache(key, value, ttl) {
+ const item = {
+ value: value,
+ expiry: Date.now() + ttl
+ };
+ localStorage.setItem(key, JSON.stringify(item));
+ }
+
+ // Get data from localStorage, remove if expired
+ function getCache(key) {
+ const itemStr = localStorage.getItem(key);
+ if (!itemStr) return null;
+ try {
+ const item = JSON.parse(itemStr);
+ if (Date.now() > item.expiry) {
+ localStorage.removeItem(key);
+ return null;
+ }
+ return item.value;
+ } catch {
+ localStorage.removeItem(key);
+ return null;
+ }
+ }
+
+ // Fetch with timeout and failover between two APIs
+ async function fetchWithTimeoutAndFailover(endpoint, options = {}, timeout = 10000) {
+ const endpoints = [`${API_BASE_A}/${endpoint}`, `${API_BASE_B}/${endpoint}`];
+ let lastError;
+ 
+ for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+ for (const url of endpoints) {
+ try {
+ const controller = new AbortController();
+ const id = setTimeout(() => controller.abort(), timeout);
+ const response = await fetch(url, { ...options, signal: controller.signal });
+ clearTimeout(id);
+ if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+ return response;
+ } catch (error) {
+ lastError = error;
+ console.warn(`Failed to fetch ${url}: ${error.message}`);
+ if (url === endpoints[endpoints.length - 1] && attempt < MAX_RETRIES - 1) {
+ await new Promise(resolve => setTimeout(resolve, 1000));
+ }
+ }
+ }
+ }
+ throw lastError || new Error('All fetch attempts failed');
+ }
+
+ // Fade-in Animation
+ function observeFadeIn(selector) {
+ const elements = document.querySelectorAll(selector);
+ const observer = new IntersectionObserver((entries) => {
+ entries.forEach(entry => {
+ if (entry.isIntersecting) {
+ entry.target.style.opacity = 1;
+ entry.target.style.transform = 'none';
+ observer.unobserve(entry.target);
+ }
+ });
+ }, { threshold: 0.1 });
+ elements.forEach(el => observer.observe(el));
+ }
+
+ function renderError(container, message, origin) {
+ container.innerHTML = `<p class="fade-in">${message}</p>`;
+ observeFadeIn('.fade-in');
+ if (window.console)
+ console.error(`[${origin}] ${message}`);
+ }
+
+ window.observeFadeIn = observeFadeIn;
+ window.renderError = renderError;
+
+ // Send Email via API
+ async function sendEmail(name, email, message, selectedItems, totalFee) {
+ const container = document.getElementById('form-message');
+ container.innerHTML = '<div class="loader">Sending email...</div>';
+ container.style.display = 'block';
+ try {
+ const response = await fetchWithTimeoutAndFailover('api/email/send-email', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json'
+ },
+ body: JSON.stringify({ name, email, message, selectedItems, totalFee })
+ });
+ const data = await response.json();
+ if (data.error) throw new Error(data.error);
+ container.innerHTML = `<p class="form-message success fade-in">${data.message || 'Message sent successfully!'}</p>`;
+ observeFadeIn('.form-message.success.fade-in');
+ return true;
+ } catch (error) {
+ container.innerHTML = `<p class="form-message error fade-in">Failed to send email: ${error.message}</p>`;
+ observeFadeIn('.form-message.error.fade-in');
+ return false;
+ }
+ }
+
+ // Copy UPI ID to Clipboard
+ function copyUpiId(upiId) {
+ navigator.clipboard.writeText(upiId).then(() => {
+ const copyMessage = document.getElementById('copy-message');
+ copyMessage.classList.add('visible');
+ setTimeout(() => {
+ copyMessage.classList.remove('visible');
+ }, 2000);
+ }).catch(err => {
+ console.error('Failed to copy UPI ID:', err);
+ });
+ }
+
+ // Project Cost Calculator
+ function calculateCost() {
+ const websiteTypeSelect = document.getElementById('website-type');
+ const websiteTypeValue = parseInt(websiteTypeSelect.value) || 0;
+ const websiteTypeText = websiteTypeSelect.options[websiteTypeSelect.selectedIndex].text;
+
+ const tasks = Array.from(document.querySelectorAll('input[name="tasks"]:checked'));
+ const tasksHours = tasks.reduce((sum, task) => sum + parseInt(task.value), 0);
+ const tasksLabels = tasks.map(task => task.parentElement.textContent.trim());
+
+ const totalHours = websiteTypeValue + tasksHours;
+ const hourlyRate = 1500; // Updated hourly rate
+ totalFee = totalHours * hourlyRate; // Update global totalFee
+
+ // Update selected items for display and email
+ selectedItems = [];
+ if (websiteTypeValue > 0) {
+ selectedItems.push(websiteTypeText);
+ }
+ selectedItems.push(...tasksLabels);
+
+ // Update selected items list for display
+ const selectedItemsList = document.getElementById('selected-items-list');
+ selectedItemsList.innerHTML = '';
+
+ if (selectedItems.length > 0) {
+ selectedItems.forEach(item => {
+ const li = document.createElement('li');
+ li.textContent = item;
+ selectedItemsList.appendChild(li);
+ });
+ } else {
+ const li = document.createElement('li');
+ li.textContent = 'No items selected';
+ selectedItemsList.appendChild(li);
+ }
+
+ document.getElementById('total-hours').textContent = totalHours;
+ document.getElementById('total-fee').textContent = `₹${totalFee.toLocaleString('en-IN')}`;
+ }
+
+ // Toggle Menu
+ const hamburger = document.querySelector('.hamburger');
+ const navLinks = document.querySelector('.nav-links');
+ hamburger.addEventListener('click', () => {
+ hamburger.classList.toggle('active');
+ navLinks.classList.toggle('active');
+ });
+
+ // Form Submission
+ const form = document.getElementById('hire-me-form');
+ form.addEventListener('submit', async (e) => {
+ e.preventDefault();
+ const name = document.getElementById('name').value;
+ const email = document.getElementById('email').value;
+ let message = document.getElementById('message').value;
+
+ // Append selected items and total fee to the message
+ if (selectedItems.length > 0) {
+ message += '\n\nSelected Project Items:\n- ' + selectedItems.join('\n- ');
+ } else {
+ message += '\n\nSelected Project Items: None';
+ }
+ message += `\n\nTotal Estimated Cost: ₹${totalFee.toLocaleString('en-IN')}`;
+
+ const success = await sendEmail(name, email, message, selectedItems, totalFee);
+ if (success) {
+ form.reset();
+ document.getElementById('form-message').innerHTML = '<p class="form-message success fade-in">Message sent successfully!</p>';
+ observeFadeIn('.form-message.success.fade-in');
+ }
+ });
+
+ // Calculator Form Events
+ const calculatorForm = document.getElementById('calculator-form');
+ calculatorForm.addEventListener('change', calculateCost);
+ calculatorForm.addEventListener('input', calculateCost);
+
+ // Initialize
+ document.addEventListener('DOMContentLoaded', () => {
+ observeFadeIn('.fade-in');
+ calculateCost(); // Initialize calculator display
+ });
+ </script>
+</body>
+</html>
