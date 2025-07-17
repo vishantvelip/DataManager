@@ -43,8 +43,8 @@ router.post("/create", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = "";
-    if (req.file) {
-      projectImg = req.file.path; // Cloudinary URL
+    if (req.file && req.file.path) {
+      projectImg = req.file.path;
     }
     await Skill.create({ skillName, description, projectImg });
     res.redirect("/api/skills/view");
@@ -93,16 +93,16 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = skill.projectImg;
-    if (req.file) {
+    if (req.file && req.file.path) {
       if (projectImg) {
-        const publicId = projectImg.split('/').pop().split('.')[0]; // Extract public_id
+        const publicId = projectImg.split('/').pop().split('.')[0];
         try {
-          await cloudinary.uploader.destroy(`blogifyer_Uploads/${publicId}`);
+          await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
         } catch (err) {
           console.error("Error deleting old image from Cloudinary:", err);
         }
       }
-      projectImg = req.file.path; // New Cloudinary URL
+      projectImg = req.file.path;
     }
     await Skill.findByIdAndUpdate(req.params.id, {
       skillName,
@@ -129,9 +129,9 @@ router.post("/delete/:id", async (req, res) => {
       });
     }
     if (skill.projectImg) {
-      const publicId = skill.projectImg.split('/').pop().split('.')[0]; // Extract public_id
+      const publicId = skill.projectImg.split('/').pop().split('.')[0];
       try {
-        await cloudinary.uploader.destroy(`blogifyer_Uploads/${publicId}`);
+        await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
       } catch (err) {
         console.error("Error deleting image from Cloudinary:", err);
       }
