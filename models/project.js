@@ -7,7 +7,7 @@ const projectSchema = new Schema(
     description: { type: String, required: true, trim: true },
     projectImg: { type: String, default: "" },
     projectsUrl: { type: String, required: true, trim: true },
-    projectCodeViewurl: { type: String, required: true, trim: true }, // Moved inside schema
+    projectCodeViewurl: { type: String, required: true, trim: true },
   },
   { timestamps: true }
 );
