@@ -1,4 +1,3 @@
-
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -6,7 +5,6 @@ const emailRoutes = require("./routes/email");
 const projectRoutes = require("./routes/project");
 const aboutRoutes = require("./routes/about");
 const skillRoutes = require("./routes/skill");
-const multer = require("multer");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -27,7 +25,7 @@ app.use(
 );
 
 mongoose
-  .connect(process.env.MONGO_URI, {})
+  .connect(process.env.MONGODB_URI, {})
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -37,20 +35,19 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 app.use("/api/projects", projectRoutes);
 app.use("/api/about", aboutRoutes);
 app.use("/api/skills", skillRoutes);
-app.use('/api/email', emailRoutes);
+app.use("/api/email", emailRoutes);
 
 app.get("/", (req, res) => {
   res.render("home", { message: null });
 });
 
-app.get("/Hierme",(req,res) =>{
-  res.render("HierMe")
-})
+app.get("/Hierme", (req, res) => {
+  res.render("HierMe");
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -71,4 +68,4 @@ if (require.main === module) {
   app.listen(port, () => console.log(`Server started at PORT: ${port}`));
 }
 
-module.exports = app; // <-- This allows Vercel to use your app
+module.exports = app;
