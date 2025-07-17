@@ -51,7 +51,7 @@ app.get("/Hierme", (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError) {
+  if (err.name === "MulterError") {
     return res.status(400).render("error", {
       message: `File upload error: ${err.message}`,
     });
@@ -63,7 +63,6 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Only listen if run directly (for local development)
 if (require.main === module) {
   app.listen(port, () => console.log(`Server started at PORT: ${port}`));
 }
