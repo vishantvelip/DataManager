@@ -5,7 +5,6 @@ const upload = require("../middleware/multerConfig");
 
 const router = Router();
 
-// Render all projects (normal view)
 router.get("/view", async (req, res) => {
   try {
     const searchQuery = req.query.search || "";
@@ -28,7 +27,6 @@ router.get("/view", async (req, res) => {
   }
 });
 
-// All projects in JSON format
 router.get("/json", async (req, res) => {
   try {
     const projects = await Project.find();
@@ -38,7 +36,6 @@ router.get("/json", async (req, res) => {
   }
 });
 
-// Create Project (form)
 router.get("/create", (req, res) => {
   res.render("edit-project", { project: {}, message: null });
 });
@@ -53,8 +50,8 @@ router.post("/create", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = "";
-    if (req.file) {
-      projectImg = req.file.path; // Cloudinary URL
+    if (req.file && req.file.path) {
+      projectImg = req.file.path;
     }
     const newProject = new Project({
       name,
@@ -74,7 +71,6 @@ router.post("/create", upload.single("projectImg"), async (req, res) => {
   }
 });
 
-// Edit project form
 router.get("/edit/:id", async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -97,7 +93,6 @@ router.get("/edit/:id", async (req, res) => {
   }
 });
 
-// Update a project
 router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
   try {
     const { name, title, description, projectsUrl, projectCodeViewurl } = req.body;
@@ -117,17 +112,16 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = project.projectImg;
-    if (req.file) {
-      // Delete old image from Cloudinary if it exists
+    if (req.file && req.file.path) {
       if (projectImg) {
-        const publicId = projectImg.split('/').pop().split('.')[0]; // Extract public_id
+        const publicId = projectImg.split('/').pop().split('.')[0];
         try {
-          await cloudinary.uploader.destroy(`blogifyer_Uploads/${publicId}`);
+          await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
         } catch (err) {
           console.error("Error deleting old image from Cloudinary:", err);
         }
       }
-      projectImg = req.file.path; // New Cloudinary URL
+      projectImg = req.file.path;
     }
     await Project.findByIdAndUpdate(req.params.id, {
       name,
@@ -147,7 +141,6 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
   }
 });
 
-// Delete a project
 router.post("/delete/:id", async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -160,9 +153,9 @@ router.post("/delete/:id", async (req, res) => {
       });
     }
     if (project.projectImg) {
-      const publicId = project.projectImg.split('/').pop().split('.')[0]; // Extract public_id
+      const publicId = project.projectImg.split('/').pop().split('.')[0];
       try {
-        await cloudinary.uploader.destroy(`blogifyer_Uploads/${publicId}`);
+        await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
       } catch (err) {
         console.error("Error deleting image from Cloudinary:", err);
       }
