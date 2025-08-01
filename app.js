@@ -50,7 +50,7 @@ app.get("/Hierme", (req, res) => {
 });
 
 app.get("/sell-web", (req, res) => {
-  res.render("HierMe");
+  res.render("sell-web");
 });
 
 // Error handling middleware
