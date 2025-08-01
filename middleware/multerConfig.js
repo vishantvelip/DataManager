@@ -1,5 +1,5 @@
-const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 
 cloudinary.config({
@@ -10,13 +10,27 @@ cloudinary.config({
 
 const imageStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'blogifyer_uploads',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
-    public_id: (req, file) => Date.now() + '-' + file.originalname,
+  params: async (req, file) => {
+    return {
+      folder: 'portfolio_uploads', // Updated folder name for clarity
+      allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
+      public_id: `${Date.now()}-${file.originalname.replace(/\.[^/.]+$/, '')}`, // Remove file extension
+      overwrite: true, // Overwrite files with the same public_id
+    };
   },
 });
 
-const cloudinaryUpload = multer({ storage: imageStorage });
+const cloudinaryUpload = multer({
+  storage: imageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPG, PNG, and GIF are allowed.'), false);
+    }
+  },
+});
 
 module.exports = cloudinaryUpload;
