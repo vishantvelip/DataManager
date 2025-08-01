@@ -49,6 +49,10 @@ app.get("/Hierme", (req, res) => {
   res.render("HierMe");
 });
 
+app.get("/sell-web", (req, res) => {
+  res.render("HierMe");
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   if (err.name === "MulterError") {
