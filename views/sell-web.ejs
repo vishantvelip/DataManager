@@ -158,6 +158,7 @@
                         <h2>${project.title}</h2>
                         <img src="${project.projectImg}" alt="${project.name}">
                         <p>${project.description.replace(/\r\n/g, '<br>')}</p>
+                        <p><strong>Price:</strong> ₹${project.price.toLocaleString()}</p>
                         <div class="project-links">
                             <a href="${project.projectsUrl}" target="_blank">View Project</a>
                             <a href="${project.projectCodeViewurl}" target="_blank">View Code</a>
