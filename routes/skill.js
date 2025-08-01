@@ -43,10 +43,12 @@ router.post("/create", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = "";
-    if (req.file && req.file.path) {
-      projectImg = req.file.path;
+    let publicId = "";
+    if (req.file) {
+      projectImg = req.file.path; // Cloudinary URL
+      publicId = req.file.filename; // Cloudinary public_id
     }
-    await Skill.create({ skillName, description, projectImg });
+    await Skill.create({ skillName, description, projectImg, publicId });
     res.redirect("/api/skills/view");
   } catch (error) {
     res.status(500).render("edit-skill", {
@@ -93,21 +95,23 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = skill.projectImg;
-    if (req.file && req.file.path) {
-      if (projectImg) {
-        const publicId = projectImg.split('/').pop().split('.')[0];
+    let publicId = skill.publicId;
+    if (req.file) {
+      if (publicId) {
         try {
-          await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
+          await cloudinary.uploader.destroy(`portfolio_uploads/${publicId}`);
         } catch (err) {
           console.error("Error deleting old image from Cloudinary:", err);
         }
       }
-      projectImg = req.file.path;
+      projectImg = req.file.path; // New Cloudinary URL
+      publicId = req.file.filename; // New Cloudinary public_id
     }
     await Skill.findByIdAndUpdate(req.params.id, {
       skillName,
       description,
       projectImg,
+      publicId,
     });
     res.redirect("/api/skills/view");
   } catch (error) {
@@ -128,10 +132,9 @@ router.post("/delete/:id", async (req, res) => {
         message: "Skill not found",
       });
     }
-    if (skill.projectImg) {
-      const publicId = skill.projectImg.split('/').pop().split('.')[0];
+    if (skill.publicId) {
       try {
-        await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
+        await cloudinary.uploader.destroy(`portfolio_uploads/${skill.publicId}`);
       } catch (err) {
         console.error("Error deleting image from Cloudinary:", err);
       }
