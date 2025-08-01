@@ -337,6 +337,7 @@
           <th scope="col">Name</th>
           <th scope="col">Title</th>
           <th scope="col">Description</th>
+          <th scope="col">Price</th>
           <th scope="col">Project URL</th>
           <th scope="col">Code View URL</th>
           <th scope="col">Image</th>
@@ -346,7 +347,7 @@
       <tbody>
         <% if (projects.length === 0) { %>
           <tr>
-            <td colspan="7" style="text-align: center;">No projects found.</td>
+            <td colspan="8" style="text-align: center;">No projects found.</td>
           </tr>
         <% } else { %>
           <% projects.forEach(function(project) { %>
@@ -354,6 +355,7 @@
               <td title="<%= project.name %>"><%= project.name %></td>
               <td title="<%= project.title %>"><%= project.title %></td>
               <td title="<%= project.description %>"><%= project.description %></td>
+              <td title="₹<%= project.price.toLocaleString() %>">₹<%= project.price.toLocaleString() %></td>
               <td>
                 <a href="<%= project.projectsUrl %>" target="_blank" rel="noopener noreferrer" title="<%= project.projectsUrl %>">
                   <%= project.projectsUrl %>
@@ -391,6 +393,7 @@
             <p><strong>Name:</strong> <%= project.name %></p>
             <p><strong>Title:</strong> <%= project.title %></p>
             <p><strong>Description:</strong> <%= project.description %></p>
+            <p><strong>Price:</strong> ₹<%= project.price.toLocaleString() %></p>
             <p><strong>Project URL:</strong> <a href="<%= project.projectsUrl %>" target="_blank" rel="noopener noreferrer"><%= project.projectsUrl %></a></p>
             <p><strong>Code View URL:</strong> <a href="<%= project.projectCodeViewurl %>" target="_blank" rel="noopener noreferrer"><%= project.projectCodeViewurl %></a></p>
             <div class="action-buttons">
