@@ -50,14 +50,17 @@ router.post("/create", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = "";
-    if (req.file && req.file.path) {
-      projectImg = req.file.path;
+    let publicId = "";
+    if (req.file) {
+      projectImg = req.file.path; // Cloudinary URL
+      publicId = req.file.filename; // Cloudinary public_id
     }
     const newProject = new Project({
       name,
       title,
       description,
       projectImg,
+      publicId, // Store publicId for easier deletion
       projectsUrl,
       projectCodeViewurl,
     });
@@ -112,22 +115,25 @@ router.post("/update/:id", upload.single("projectImg"), async (req, res) => {
       });
     }
     let projectImg = project.projectImg;
-    if (req.file && req.file.path) {
-      if (projectImg) {
-        const publicId = projectImg.split('/').pop().split('.')[0];
+    let publicId = project.publicId;
+    if (req.file) {
+      // Delete old image if it exists
+      if (publicId) {
         try {
-          await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
+          await cloudinary.uploader.destroy(`portfolio_uploads/${publicId}`);
         } catch (err) {
           console.error("Error deleting old image from Cloudinary:", err);
         }
       }
-      projectImg = req.file.path;
+      projectImg = req.file.path; // New Cloudinary URL
+      publicId = req.file.filename; // New Cloudinary public_id
     }
     await Project.findByIdAndUpdate(req.params.id, {
       name,
       title,
       description,
       projectImg,
+      publicId,
       projectsUrl,
       projectCodeViewurl,
     });
@@ -152,10 +158,9 @@ router.post("/delete/:id", async (req, res) => {
         searchQuery: "",
       });
     }
-    if (project.projectImg) {
-      const publicId = project.projectImg.split('/').pop().split('.')[0];
+    if (project.publicId) {
       try {
-        await cloudinary.uploader.destroy(`blogifyer_uploads/${publicId}`);
+        await cloudinary.uploader.destroy(`portfolio_uploads/${project.publicId}`);
       } catch (err) {
         console.error("Error deleting image from Cloudinary:", err);
       }
