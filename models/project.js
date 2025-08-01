@@ -6,6 +6,7 @@ const projectSchema = new Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
     projectImg: { type: String, default: "" },
+    publicId: { type: String, default: "" }, // Added to store Cloudinary public ID
     projectsUrl: { type: String, required: true, trim: true },
     projectCodeViewurl: { type: String, required: true, trim: true },
   },
